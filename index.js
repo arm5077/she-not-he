@@ -1,11 +1,15 @@
 var Twitter = require('twitter');
 
 	var request_count = 450; 
+	var tweet_count = 100;
 	var since_id = 0;
 	var bot_saying = ["Beep beep! It's she, not he.", 
 		"Booooop! It's she, not he.", 
 		"Beepbopbeep! It's she, not he.", 
-		"~ROBOT CLANKING NOISE~ It's she, not he."
+		"~ROBOT CLANKING NOISE~ It's she, not he.",
+		"Click, whirrrrrr. It's she, not he.",
+		"*Alarm sounds* It's she, not he.",
+		"Breeepbeep! It's she, not he."
 	];
 
 var client = new Twitter({
@@ -19,19 +23,21 @@ var client = new Twitter({
 setInterval(function(){
 	
 	// We get another Twitter request back.
-	request_count--;
+	request_count++;
 
+	// We accrue our twitter posts back;
+	tweet_count += .25
+	
 	if(request_count > 0){
 		// We used a Twitter request
-		request_count++;
+		request_count--;
 		
 		client.get('search/tweets', {q: 'jenner,he', result_type: "recent", since_id: since_id}, function(error, tweets, response){
-			if( error ) throw error;
+			if( error ) console.log(error);
 			
 			since_id = tweets.search_metadata.max_id_str;
-			console.log(since_id);
-			
-			tweets.statuses.forEach(function(tweet){
+		
+			tweets.statuses.forEach(function(tweet, i){
 				if( tweet.text.indexOf("RT ") == -1 && 
 					tweet.text.indexOf("RT:") == -1 &&
 					tweet.text.toLowerCase().indexOf("transgender") == -1 &&
@@ -43,14 +49,39 @@ setInterval(function(){
 					tweet.text.toLowerCase().indexOf("he/she") == -1 &&
 					tweet.text.toLowerCase().indexOf("she/he") == -1 &&
 					tweet.text.toLowerCase().indexOf("she_not_he") == -1 &&
-					tweet.text.toLowerCase().indexOf("it's she") == -1) {
-						console.log(tweet.text);
-					}
+					tweet.text.toLowerCase().indexOf("stop") == -1 &&
+					tweet.text.toLowerCase().indexOf("drake") == -1 &&
+					tweet.text.toLowerCase().indexOf("it's she") == -1 &&
+					tweet_count > 0) {
+					
+						// Wrap this in a timeout so we don't overload Twitter with tweets.
+						setTimeout(function(){
+							console.log(tweet.text);
 
+							// Dock us a tweet
+							tweet_count--;
+
+							// Post the tweet
+							client.post('statuses/update', {status: ".@" + tweet.user.screen_name + " " + bot_saying[getRandom( bot_saying.length - 1)], in_reply_to_status_id: tweet.id_str}, function(error, tweet, response){
+								if( error ){
+									if(error.code == 226){
+										
+									}
+								} 
+								else {
+									console.log(tweet.text);
+								}		
+							});
+							
+						}, 500 * i)
+					}
 			});
 		});
 		
 	}
 	
-},2100)
+},1000)
 
+function getRandom(i) {
+	return Math.floor(Math.random() * (i + 1) );
+}
