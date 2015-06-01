@@ -1,0 +1,22 @@
+{
+  "name": "she-not-he",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arm5077/she-not-he.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arm5077/she-not-he/issues"
+  },
+  "homepage": "https://github.com/arm5077/she-not-he",
+  "dependencies": {
+    "twitter": "^1.2.5"
+  }
+}
