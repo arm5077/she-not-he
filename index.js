@@ -1,4 +1,5 @@
 var Twitter = require('twitter');
+var http = require('http');
 
 	var request_count = 450; 
 	var tweet_count = 100;
@@ -18,6 +19,11 @@ var client = new Twitter({
   access_token_key: process.env.ACCESS_TOKEN_KEY,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
+
+
+// Turn on server
+var port = process.env.PORT || 3000;
+http.createServer().listen(port);
 
 
 setInterval(function(){
@@ -75,7 +81,7 @@ setInterval(function(){
 									}		
 								});
 
-							}, 1000 * i+1)
+							}, 2000 * (i+1))
 						}
 				});
 			}		
