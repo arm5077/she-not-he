@@ -34,53 +34,57 @@ setInterval(function(){
 		
 		client.get('search/tweets', {q: 'jenner,he', result_type: "recent", since_id: since_id}, function(error, tweets, response){
 			if( error ) console.log(error);
+			else {
+				
+				since_id = tweets.search_metadata.max_id_str;
+				
+				tweets.statuses.forEach(function(tweet, i){
+					if( tweet.text.indexOf("RT ") == -1 && 
+						tweet.text.indexOf("RT:") == -1 &&
+						tweet.text.toLowerCase().indexOf("transgender") == -1 &&
+						tweet.text.toLowerCase().indexOf("fox news") == -1 &&
+						tweet.text.toLowerCase().indexOf("\"she is\"") == -1 &&
+						tweet.text.toLowerCase().indexOf("\"he\"") == -1 &&
+						tweet.text.toLowerCase().indexOf("'he'") == -1 &&
+						tweet.text.toLowerCase().indexOf("he/him") == -1 &&
+						tweet.text.toLowerCase().indexOf("he/she") == -1 &&
+						tweet.text.toLowerCase().indexOf("she/he") == -1 &&
+						tweet.text.toLowerCase().indexOf("she_not_he") == -1 &&
+						tweet.text.toLowerCase().indexOf("stop") == -1 &&
+						tweet.text.toLowerCase().indexOf("drake") == -1 &&
+						tweet.text.toLowerCase().indexOf("it's she") == -1 &&
+						tweet_count > 0) {
+
+							// Wrap this in a timeout so we don't overload Twitter with tweets.
+							setTimeout(function(){
+								console.log(tweet.text);
+
+								// Dock us a tweet
+								tweet_count--;
+
+								// Post the tweet
+								client.post('statuses/update', {status: ".@" + tweet.user.screen_name + " " + bot_saying[getRandom( bot_saying.length - 1)], in_reply_to_status_id: tweet.id_str}, function(error, tweet, response){
+									if( error ){
+										console.log(error);
+										if(error.code == 226){
+
+										}
+									} 
+									else {
+										console.log(tweet.text);
+									}		
+								});
+
+							}, 1000 * i+1)
+						}
+				});
+			}		
 			
-			since_id = tweets.search_metadata.max_id_str;
-		
-			tweets.statuses.forEach(function(tweet, i){
-				if( tweet.text.indexOf("RT ") == -1 && 
-					tweet.text.indexOf("RT:") == -1 &&
-					tweet.text.toLowerCase().indexOf("transgender") == -1 &&
-					tweet.text.toLowerCase().indexOf("fox news") == -1 &&
-					tweet.text.toLowerCase().indexOf("\"she is\"") == -1 &&
-					tweet.text.toLowerCase().indexOf("\"he\"") == -1 &&
-					tweet.text.toLowerCase().indexOf("'he'") == -1 &&
-					tweet.text.toLowerCase().indexOf("he/him") == -1 &&
-					tweet.text.toLowerCase().indexOf("he/she") == -1 &&
-					tweet.text.toLowerCase().indexOf("she/he") == -1 &&
-					tweet.text.toLowerCase().indexOf("she_not_he") == -1 &&
-					tweet.text.toLowerCase().indexOf("stop") == -1 &&
-					tweet.text.toLowerCase().indexOf("drake") == -1 &&
-					tweet.text.toLowerCase().indexOf("it's she") == -1 &&
-					tweet_count > 0) {
-					
-						// Wrap this in a timeout so we don't overload Twitter with tweets.
-						setTimeout(function(){
-							console.log(tweet.text);
-
-							// Dock us a tweet
-							tweet_count--;
-
-							// Post the tweet
-							client.post('statuses/update', {status: ".@" + tweet.user.screen_name + " " + bot_saying[getRandom( bot_saying.length - 1)], in_reply_to_status_id: tweet.id_str}, function(error, tweet, response){
-								if( error ){
-									if(error.code == 226){
-										
-									}
-								} 
-								else {
-									console.log(tweet.text);
-								}		
-							});
-							
-						}, 500 * i)
-					}
-			});
 		});
 		
 	}
 	
-},1000)
+},10000)
 
 function getRandom(i) {
 	return Math.floor(Math.random() * (i + 1) );
