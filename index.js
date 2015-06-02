@@ -27,8 +27,8 @@ var client = new Twitter({
 var port = process.env.PORT || 3000;
 http.createServer().listen(port);
 
-// We get 450 requests every 15 minutes, so let's check
-// every 2-3 seconds.
+// We get 180 requests every 15 minutes, so let's check
+// every 5 seconds or so.
 setInterval(function(){
 	console.log( ( (cooldownEnd - new Date().getTime()) / 1000 ) + " seconds to new tweet eligibility" );
 	
@@ -74,7 +74,7 @@ setInterval(function(){
 			});
 		}		
 	});
-},2500)
+},5100)
 
 function getRandom(i) {
 	return Math.floor(Math.random() * (i + 1) );
